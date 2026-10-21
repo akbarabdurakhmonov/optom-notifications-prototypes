@@ -25,20 +25,20 @@ function listHTML() {
 function target(to) {
   const back = `<span class="btn link" id="back">← ${t("title")}</span>`;
   if (to.k === "seller") return `${back}<div class="card mt12"><div class="row" style="justify-content:space-between"><h3>Ipak Yo‘li Textile</h3>${S.resolved ? `<span class="pill g">Подтверждён · Лола М., 10:42</span>` : `<span class="pill a">На проверке</span>`}</div><p class="sub">ИНН 309 112 445 · Ташкент · документы: 3 файла</p>${S.resolved ? `<div class="alert i mt12"><span class="ic">i</span><div><b>Another moderator already approved this seller</b>The page opens in its current state; no approve / reject buttons (US-AF-5.11-01 AC5).</div></div>` : `<div class="row mt16"><span class="btn pri">Подтвердить</span><span class="btn dan">Отклонить</span></div>`}</div>`;
-  if (to.k === "product") return `${back}<div class="card mt12"><div class="row" style="justify-content:space-between"><h3>Ткань хлопок 150 см, синий</h3><span class="pill a">На модерации</span></div><p class="sub">Textile Plus · новый товар</p><div class="row mt16"><span class="btn pri">Одобрить</span><span class="btn dan">Отклонить</span></div></div>`;
+  if (to.k === "product") return `${back}<div class="card mt12"><div class="row" style="justify-content:space-between"><h3>Товары на модерации · Textile Plus</h3><span class="pill a">3 товара</span></div><p class="sub">Filtered by the store of the notification; one ADM-02 item groups everything the store sent within 5 minutes.</p><table class="t mt12"><tr><th>Товар</th><th>Тип</th><th>Отправлен</th><th></th></tr>${[["Ткань хлопок 150 см, синий", "Новый"], ["Ткань лён 140 см, бежевый", "Новый"], ["Сатин 220 см, белый", "Изменение цены и фото"]].map(r => `<tr><td>${r[0]}</td><td>${r[1]}</td><td>сегодня 10:4${r[0].length % 9}</td><td><span class="btn sm soft">Проверить</span></td></tr>`).join("")}</table></div>`;
   return `${back}<div class="card mt12"><div class="row" style="justify-content:space-between"><h3>Заказ №345811</h3><span class="pill r">Возврат не выполнен</span></div><p class="sub">Мадина Юсупова · отменён продавцом · 640 000 сум</p><div class="alert e mt12"><span class="ic">!</span><div><b>Возврат на карту •••• 4417 не прошёл</b>Paylov: «Карта заблокирована» · 21.10.2026 11:05</div></div><p class="small muted mt12">Refund block of the order page. What the super admin does next (retry, manual refund) is not part of this story.</p></div>`;
 }
 function orderPage() {
   const f = S.form;
   const L = { uz: "O‘zbekcha *", ru: "Русский", en: "English" };
   const fl = f ? `<div class="modal-bg" style="position:fixed"><div class="modal"><h3>Отправить уведомление продавцу</h3><p class="sub">Textile Plus · заказ №345934 · получат владелец и сотрудники филиала Чиланзар с ролью для заказов</p>
-    <div class="tabs mt12">${Object.keys(L).map(l => `<span class="tab ${f.l === l ? "on" : ""}" data-fl="${l}">${L[l]}${(f.t[l] || f.x[l]) ? " ●" : ""}</span>`).join("")}</div>
-    <div class="field mt12"><label>Заголовок</label><input class="inp ${f.err && !f.t.uz && f.l === "uz" ? "err" : ""}" id="ft" maxlength="40" value="${esc(f.t[f.l] || "")}"><span class="hint">${(f.t[f.l] || "").length} / 40</span></div>
-    <div class="field"><label>Текст</label><textarea class="inp" id="fx" rows="3" maxlength="130">${esc(f.x[f.l] || "")}</textarea><span class="hint">${(f.x[f.l] || "").length} / 130</span></div>
-    ${f.err ? `<div class="err-t">${!f.t.uz ? "Enter the title in Uzbek." : "Enter the text in Uzbek."}</div>` : ""}
-    <p class="small muted">Uzbek is required; an empty Russian or English text falls back to Uzbek for that recipient. Seller sees: «Optom.uz: заказ №345934» + your text (SOR-06).</p>
+    <div class="tabs mt12">${Object.keys(L).map(l => `<span class="tab ${f.l === l ? "on" : ""}" data-fl="${l}">${L[l]}${f.x[l] ? " ●" : ""}</span>`).join("")}</div>
+    <div class="field mt12"><label>Заголовок</label><input class="inp" disabled value="Optom.uz: заказ №345934"><span class="hint">Fixed by the SOR-06 template</span></div>
+    <div class="field"><label>Текст *</label><textarea class="inp ${f.err && f.l === "uz" ? "err" : ""}" id="fx" rows="3" maxlength="130">${esc(f.x[f.l] || "")}</textarea><span class="hint">${(f.x[f.l] || "").length} / 130</span></div>
+    ${f.err ? `<div class="err-t">Enter the text in Uzbek.</div>` : ""}
+    <p class="small muted">Uzbek is required; an empty Russian or English text falls back to Uzbek for that recipient. The title is fixed by the SOR-06 template; the admin writes only the text.</p>
     ${f.ask ? `<div class="alert w mt12"><span class="ic">?</span><div><b>Discard the message?</b><div class="row mt8"><span class="btn sm danfill" id="fdisc">Discard</span><span class="btn sm out" id="fkeep">Keep editing</span></div></div></div>` : ""}
-    <div class="acts"><span class="btn out" id="fcan">Отмена</span><span class="btn pri" id="fsend" ${f.t.uz && f.x.uz ? "" : 'aria-disabled="true" style="opacity:.55"'}>Отправить</span></div></div></div>` : "";
+    <div class="acts"><span class="btn out" id="fcan">Отмена</span><span class="btn pri" id="fsend" ${f.x.uz ? "" : 'aria-disabled="true" style="opacity:.55"'}>Отправить</span></div></div></div>` : "";
   return `<div class="h1">Заказ №345934</div><div class="card"><div class="row" style="justify-content:space-between"><div><b>Textile Plus</b> · филиал Чиланзар<div class="small muted">Покупатель: Азиз Каримов · 1 250 000 сум</div></div><span class="pill a">Ждёт подтверждения продавца</span></div>
    <div class="row mt16"><span class="btn out" id="fopen">${ICON.bell.replace("<svg", '<svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.7"')} Отправить уведомление</span><span class="btn dan">Отменить заказ</span></div>
    <p class="small muted mt12">Today this button shows a success message without sending anything (Notifications in code today, D-08). In this proposal it opens the form below and calls the existing notify-seller API.</p></div>${fl}`;
@@ -64,18 +64,17 @@ function bind() {
   const f = S.form;
   const fo = $("#fopen"); if (fo) fo.onclick = () => { S.form = { l: "uz", t: {}, x: {}, err: false }; render(); };
   if (f) {
-    const sv = () => { f.t[f.l] = $("#ft").value; f.x[f.l] = $("#fx").value; };
-    $("#ft").oninput = () => { sv(); $("#ft").nextElementSibling.textContent = $("#ft").value.length + " / 40"; f.err = false; refreshSend(); };
+    const sv = () => { f.x[f.l] = $("#fx").value; };
     $("#fx").oninput = () => { sv(); $("#fx").nextElementSibling.textContent = $("#fx").value.length + " / 130"; f.err = false; refreshSend(); };
     document.querySelectorAll("[data-fl]").forEach(e => e.onclick = () => { sv(); f.l = e.dataset.fl; render(); });
-    $("#fsend").onclick = () => { sv(); if (!f.t.uz || !f.x.uz) { f.err = true; f.l = "uz"; render(); return; } S.form = null; render(); toast("Уведомление отправлено"); };
-    $("#fcan").onclick = () => { sv(); if (Object.values(f.t).some(Boolean) || Object.values(f.x).some(Boolean)) { f.ask = true; render(); } else { S.form = null; render(); } };
+    $("#fsend").onclick = () => { sv(); if (!f.x.uz) { f.err = true; f.l = "uz"; render(); return; } S.form = null; render(); toast("Уведомление отправлено"); };
+    $("#fcan").onclick = () => { sv(); if (Object.values(f.x).some(Boolean)) { f.ask = true; render(); } else { S.form = null; render(); } };
     const d = $("#fdisc"); if (d) d.onclick = () => { S.form = null; render(); };
     const k = $("#fkeep"); if (k) k.onclick = () => { f.ask = false; render(); };
   }
   document.onclick = e => { if (S.dd && !e.target.closest(".bellwrap")) { S.dd = false; render(); } };
 }
-function refreshSend() { const f = S.form, b = $("#fsend"); const ok = f.t.uz && f.x.uz; b.style.opacity = ok ? "" : ".55"; b.setAttribute("aria-disabled", ok ? "false" : "true"); }
+function refreshSend() { const f = S.form, b = $("#fsend"); const ok = f.x.uz; b.style.opacity = ok ? "" : ".55"; b.setAttribute("aria-disabled", ok ? "false" : "true"); }
 const roleSim = `<span>Signed in as:</span>${[["super", "Super admin"], ["mod", "Moderator"], ["sup", "Support"]].map(([k, l]) => `<span class="btn out" data-role="${k}">${l}</span>`).join("")}`;
 const SC = [
   { label: "Super admin · bell with new seller, product to check, failed refund", apply: () => reset({ items: base(), dd: true, sim: roleSim }),
@@ -88,7 +87,7 @@ const SC = [
     notes: ["A moderator gets ADM-01 and ADM-02, never ADM-08 (⚑ OQ-N15).", "A direct API call for another role's item returns HTTP 403 (AC4).", "Switch to Support: no MVP items (ADM-07 comes with Yandex Go)."], src: "US-AF-5.11-01 AC4, who can do what" },
   { label: "Moderator · seller already approved by someone else", apply: () => { reset({ items: base(), role: "mod", resolved: true, sim: roleSim }); S.page = "target"; S.target = { k: "seller" }; S.items[0].read = true; render(); },
     notes: ["Another moderator approved the seller before this one opened the item.", "The page opens as it is now: approved, no action buttons (NR-3, AC5)."], src: "US-AF-5.11-01 AC5" },
-  { label: "Order page · \"Send notification\" to the seller (SOR-06)", apply: () => reset({ items: base(), page: "order", sim: `<span>Click \"Отправить уведомление\". Try sending with an empty Uzbek title.</span>` }),
-    notes: ["Fixes D-08: the button now opens a form and sends SOR-06.", "Title 1–40 and text 1–130 characters per language, counters shown; Uzbek required; Russian / English fall back to Uzbek.", "\"Отправить\" looks disabled until the Uzbek title and text are filled; clicking anyway shows the Uzbek error.", "Cancel with text entered asks \"Discard the message?\".", "Success: form closes, toast \"Уведомление отправлено\". Recipients: owner + order roles of the order's branch.", "Open question: which admin roles may use this button."], src: "US-SF-10.1-01 AC10 and detailed requirements" },
+  { label: "Order page · \"Send notification\" to the seller (SOR-06)", apply: () => reset({ items: base(), page: "order", sim: `<span>Click \"Отправить уведомление\". Try sending with an empty Uzbek text.</span>` }),
+    notes: ["Fixes D-08: the button now opens a form and sends SOR-06.", "The title is fixed by the SOR-06 template (\"Optom.uz: заказ №…\"); the admin writes the text, 1–130 characters per language, counter shown; Uzbek required; Russian / English fall back to Uzbek.", "\"Отправить\" looks disabled until the Uzbek text is filled; clicking anyway shows the Uzbek error.", "Cancel with text entered asks \"Discard the message?\".", "Success: form closes, toast \"Уведомление отправлено\". Recipients: owner + order roles of the order's branch.", "Open question: which admin roles may use this button."], src: "US-SF-10.1-01 AC10 and detailed requirements" },
 ];
 harness({ title: "P2.2 Admin notifications", stories: "US-AF-5.11-01 · SOR-06", version: "1.0" }, SC);
