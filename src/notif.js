@@ -1,4 +1,4 @@
-// ---- Notification catalogue helpers (texts from Notifications PRD v1.3, section 5) ----
+// ---- Notification catalogue helpers (texts from Notifications PRD v1.4, section 5) ----
 // CAT is injected by the build: { "ORD-01": {g: settings group, r: release, cta, ch: web/mobile, pp: push/pull, en, uz, ru}, ... }
 let LANG = "ru";
 const SAMPLE = {

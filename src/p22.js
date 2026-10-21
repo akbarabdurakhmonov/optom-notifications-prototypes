@@ -3,10 +3,11 @@ let S = {};
 let KEY = 0;
 const I = (id, min, read, to, v) => ({ key: ++KEY, id, min, read: !!read, to, v: v || {} });
 const ROLES = { super: ["СА", "Сардор А.", "Супер-админ"], mod: ["ЛМ", "Лола М.", "Модератор"], sup: ["ОТ", "Отабек Т.", "Поддержка"] };
-const VIS = { super: ["ADM-01", "ADM-02", "ADM-08"], mod: ["ADM-01", "ADM-02"], sup: [] };
+const VIS = { super: ["ADM-01", "ADM-02"], mod: ["ADM-01", "ADM-02"], sup: ["ADM-01", "ADM-02"] };
+const VIS_LATER = { super: ["ADM-01", "ADM-02", "ADM-08"], mod: ["ADM-01", "ADM-02"], sup: [] };
 function base() { return [I("ADM-01", 3, false, { k: "seller" }, { store: "Ipak Yo‘li Textile" }), I("ADM-02", 25, false, { k: "product" }, { store: "Textile Plus" }), I("ADM-08", 70, false, { k: "refund" }, { order_no: "345811", amount: "640 000", error: "Карта заблокирована" }), I("ADM-02", 1500, true, { k: "product" }, { store: "Baraka Mebel", product_name: "Стул офисный, серый" })]; }
-function reset(over) { S = Object.assign({ role: "super", page: "home", dd: false, tab: "new", items: [], resolved: false, form: null, sim: "" }, over || {}); S.all = S.items; filt(); render(); }
-function filt() { S.items = S.all.filter(i => VIS[S.role].includes(i.id)); }
+function reset(over) { S = Object.assign({ role: "super", page: "home", dd: false, tab: "new", items: [], resolved: false, form: null, sim: "", later: false }, over || {}); S.all = S.items; filt(); render(); }
+function filt() { const V = S.later ? VIS_LATER : VIS; S.items = S.all.filter(i => V[S.role].includes(i.id)); }
 const unread = () => S.items.filter(i => !i.read).length;
 function bellHTML() { const n = unread(); return `<div class="bellwrap"><span class="bell" id="bell">${ICON.bell}${n ? `<span class="badge">${n}</span>` : ""}</span>${S.dd ? `<div class="dd"><div class="hd"><b>${t("title")}</b>${n ? `<span class="btn link sm" id="markall">${t("all")}</span>` : ""}</div>${S.items.length ? [...S.items].sort((a, b) => a.min - b.min).slice(0, 5).map(i => itemHTML(i)).join("") : `<div class="empty">${t("empty")}</div>`}<div class="ft"><span class="btn link" id="seeall">${t("seeall")} →</span></div></div>` : ""}</div>`; }
 function shell(active, crumbs, content) {
@@ -31,7 +32,7 @@ function target(to) {
 function orderPage() {
   const f = S.form;
   const L = { uz: "O‘zbekcha *", ru: "Русский", en: "English" };
-  const fl = f ? `<div class="modal-bg" style="position:fixed"><div class="modal"><h3>Отправить уведомление продавцу</h3><p class="sub">Textile Plus · заказ №345934 · получат владелец и сотрудники филиала Чиланзар с ролью для заказов</p>
+  const fl = f ? `<div class="modal-bg" style="position:fixed"><div class="modal"><h3>Отправить уведомление продавцу</h3><p class="sub">Textile Plus · заказ №345934 · получит аккаунт продавца (все пользователи магазина)</p>
     <div class="tabs mt12">${Object.keys(L).map(l => `<span class="tab ${f.l === l ? "on" : ""}" data-fl="${l}">${L[l]}${f.x[l] ? " ●" : ""}</span>`).join("")}</div>
     <div class="field mt12"><label>Заголовок</label><input class="inp" disabled value="Optom.uz: заказ №345934"><span class="hint">Fixed by the SOR-06 template</span></div>
     <div class="field"><label>Текст *</label><textarea class="inp ${f.err && f.l === "uz" ? "err" : ""}" id="fx" rows="3" maxlength="130">${esc(f.x[f.l] || "")}</textarea><span class="hint">${(f.x[f.l] || "").length} / 130</span></div>
@@ -46,7 +47,7 @@ function orderPage() {
 function render() {
   let c, crumbs = "Главная › <b>Уведомления</b>", act = "no";
   if (S.page === "order") { c = orderPage(); crumbs = "Заказы › <b>№345934</b>"; act = "or"; }
-  else if (S.page === "list") c = `<div class="h1">${t("title")}</div><div class="card">${S.role === "sup" ? `<div class="alert i mb0"><span class="ic">i</span><div><b>Support has no MVP admin items outside Yandex Go</b>ADM-07 arrives with Yandex Go (US-YG-1.11); complaints and disputes (ADM-04 – ADM-06) are release 2.</div></div>` : ""}${listHTML()}</div>`;
+  else if (S.page === "list") c = `<div class="h1">${t("title")}</div><div class="card">${S.later && S.role === "sup" ? `<div class="alert i mb0"><span class="ic">i</span><div><b>After the MVP: support gets support items only</b>ADM-07 arrives with Yandex Go (US-YG-1.11); complaints and disputes (ADM-04 – ADM-06) come later.</div></div>` : ""}${listHTML()}</div>`;
   else if (S.page === "target") c = target(S.target);
   else { c = `<div class="h1">Дашборд</div><div class="grid2"><div class="card"><h3>Продавцы на проверке</h3><p class="sub">2 заявки</p></div><div class="card"><h3>Товары на модерации</h3><p class="sub">14 товаров</p></div></div>`; act = "da"; crumbs = "<b>Дашборд</b>"; }
   $("#app").innerHTML = shell(act, crumbs, c); bind();
@@ -77,17 +78,17 @@ function bind() {
 function refreshSend() { const f = S.form, b = $("#fsend"); const ok = f.x.uz; b.style.opacity = ok ? "" : ".55"; b.setAttribute("aria-disabled", ok ? "false" : "true"); }
 const roleSim = `<span>Signed in as:</span>${[["super", "Super admin"], ["mod", "Moderator"], ["sup", "Support"]].map(([k, l]) => `<span class="btn out" data-role="${k}">${l}</span>`).join("")}`;
 const SC = [
-  { label: "Super admin · bell with new seller, product to check, failed refund", apply: () => reset({ items: base(), dd: true, sim: roleSim }),
-    notes: ["Admin bell in the top bar of the admin panel (old design) with the unread counter.", "MVP admin items: ADM-01 new seller, ADM-02 product to check, ADM-08 refund failed (US-AF-5.11-01).", "Click an item to open its target. Admin items can't be switched off.", "No admin notifications exist in code today."], src: "US-AF-5.11-01 AC1 – AC3, AC6" },
-  { label: "Super admin · Notifications page", apply: () => reset({ items: base(), page: "list", sim: roleSim }),
+  { label: "Admin · bell with new seller and product to check", apply: () => reset({ items: base(), dd: true, sim: roleSim }),
+    notes: ["Admin bell in the top bar of the admin panel (old design) with the unread counter.", "MVP admin items: ADM-01 new seller, ADM-02 product to check (US-AF-5.11-01). Every admin gets them, whatever the role (N15): switch the role to compare.", "ADM-08 (failed refund) is later with the other refund notifications (N10).", "Click an item to open its target. Admin items can't be switched off.", "No admin notifications exist in code today."], src: "US-AF-5.11-01 AC1 – AC3, AC6" },
+  { label: "Admin · Notifications page", apply: () => reset({ items: base(), page: "list", sim: roleSim }),
     notes: ["Same behaviour as the buyer and seller centre: tabs, mark all as read, empty state, retention (US-AF-5.11-01 AC7).", "Menu item \"Уведомления\" — placement in the old admin menu is a proposal."], src: "US-AF-5.11-01 AC7" },
-  { label: "Super admin · failed refund opens the order", apply: () => { reset({ items: base(), sim: roleSim }); S.page = "target"; S.target = { k: "refund" }; S.items[2].read = true; render(); },
-    notes: ["ADM-08 goes to super admins only, with amount and error.", "Click opens the order with its refund block."], src: "US-AF-5.11-01 AC3" },
-  { label: "Moderator · only moderation items", apply: () => reset({ items: base(), role: "mod", page: "list", sim: roleSim }),
-    notes: ["A moderator gets ADM-01 and ADM-02, never ADM-08 (⚑ OQ-N15).", "A direct API call for another role's item returns HTTP 403 (AC4).", "Switch to Support: no MVP items (ADM-07 comes with Yandex Go)."], src: "US-AF-5.11-01 AC4, who can do what" },
+  { label: "Failed refund (later, not in the MVP)", apply: () => { reset({ items: base(), later: true, sim: roleSim }); S.page = "target"; S.target = { k: "refund" }; S.items[2].read = true; render(); },
+    notes: ["Later: refund notifications are out of the MVP (N10). Shown for when ADM-08 ships: super admin only, with amount and error; click opens the order with its refund block.", "Open question (PRD OQ-N19): with ADM-08 later, who notices a failed refund in the MVP, for example after the 24-hour auto-cancel?"], src: "PRD v1.4 ADM-08, OQ-N19" },
+  { label: "After the MVP · moderator sees only moderation items", apply: () => reset({ items: base(), role: "mod", page: "list", later: true, sim: roleSim }),
+    notes: ["Not in the MVP: in the MVP every admin gets every admin item (N15).", "After the MVP (proposal, to confirm with the admin roles AF-5.7): moderator ADM-01 – ADM-03; support ADM-04 – ADM-07; super admin all.", "Switch to Support to see the later support view."], src: "US-AF-5.11-01, who can do what" },
   { label: "Moderator · seller already approved by someone else", apply: () => { reset({ items: base(), role: "mod", resolved: true, sim: roleSim }); S.page = "target"; S.target = { k: "seller" }; S.items[0].read = true; render(); },
     notes: ["Another moderator approved the seller before this one opened the item.", "The page opens as it is now: approved, no action buttons (NR-3, AC5)."], src: "US-AF-5.11-01 AC5" },
   { label: "Order page · \"Send notification\" to the seller (SOR-06)", apply: () => reset({ items: base(), page: "order", sim: `<span>Click \"Отправить уведомление\". Try sending with an empty Uzbek text.</span>` }),
-    notes: ["Fixes D-08: the button now opens a form and sends SOR-06.", "The title is fixed by the SOR-06 template (\"Optom.uz: заказ №…\"); the admin writes the text, 1–130 characters per language, counter shown; Uzbek required; Russian / English fall back to Uzbek.", "\"Отправить\" looks disabled until the Uzbek text is filled; clicking anyway shows the Uzbek error.", "Cancel with text entered asks \"Discard the message?\".", "Success: form closes, toast \"Уведомление отправлено\". Recipients: owner + order roles of the order's branch.", "Open question: which admin roles may use this button."], src: "US-SF-10.1-01 AC10 and detailed requirements" },
+    notes: ["Fixes D-08: the button now opens a form and sends SOR-06.", "The title is fixed by the SOR-06 template (\"Optom.uz: заказ №…\"); the admin writes the text, 1–130 characters per language, counter shown; Uzbek required; Russian / English fall back to Uzbek.", "\"Отправить\" looks disabled until the Uzbek text is filled; clicking anyway shows the Uzbek error.", "Cancel with text entered asks \"Discard the message?\".", "Success: form closes, toast \"Уведомление отправлено\". Recipient: the seller account of the store (no seller roles in the MVP, N6).", "Open question: which admin roles may use this button."], src: "US-SF-10.1-01 AC10 and detailed requirements" },
 ];
-harness({ title: "P2.2 Admin notifications", stories: "US-AF-5.11-01 · SOR-06", version: "1.0" }, SC);
+harness({ title: "P2.2 Admin notifications", stories: "US-AF-5.11-01 · SOR-06", version: "1.1" }, SC);

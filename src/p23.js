@@ -1,4 +1,4 @@
-// ===== P2.3 Push, pop-up and SMS preview gallery with length check (all 108 catalogue texts) =====
+// ===== P2.3 Push, pop-up and SMS preview gallery with length check (all 104 catalogue texts) =====
 let S = {};
 const LONG = { seller_name: "Toshkent Ulgurji Tekstil Savdo", store: "Toshkent Ulgurji Tekstil Savdo", sender_name: "Abdurakhmonova Gulnoza Shavkat", buyer_name: "Abdurakhmonova Gulnoza Shavkat", user_name: "Abdurakhmonova Gulnoza Shavkat", product_name: "Ткань хлопок 100% 150 см плотн", courier_name: "Abdurakhmonov Shavkatjon Akmal",
   reason: "Товар не соответствует описанию: другой цвет и состав ткани", address: "Ташкент, Мирзо-Улугбекский р-н, ул. Буюк Ипак Йули, д. 154", problem: "Получатель не отвечает на звонки, повторная попытка завтра", amount: "999 999 999", order_no: "1234567", message_preview: "Здравствуйте! Подскажите, пожалуйста, есть ли эта ткань в синем цвете и можно ли заказать 300 метров с доставкой", next_step: "Отправьте товар продавцу в течение 3 дней", error: "Операция отклонена банком-эмитентом карты" };
@@ -42,28 +42,28 @@ function render() {
 const MVP = (id, c) => c.r === "MVP";
 const SC = [
   { label: "iPhone lock screen · all MVP push notifications", apply: () => reset({ view: "ios", filter: (i, c) => MVP(i, c) && isPush(c), title: "iPhone · MVP push" },),
-    notes: ["Every MVP notification that goes to the apps as push, in the app's language (switch RU / UZ / EN or \"All three\").", "iOS shows the title on one line and up to 4 lines of text on the lock screen.", "\"OPTOM BIZNES\" = seller app, \"OPTOM\" = buyer app (two Firebase projects).", "Use \"Longest allowed\" to see the worst case with names cut to 30 and reasons / addresses to 60 characters (PRD 4.4)."], src: "US-BF-8.3-03 AC1, AC2 · PRD v1.3 NR-11, 4.4" },
+    notes: ["Every MVP notification that goes to the apps as push, in the app's language (switch RU / UZ / EN or \"All three\").", "iOS shows the title on one line and up to 4 lines of text on the lock screen.", "\"OPTOM BIZNES\" = seller app, \"OPTOM\" = buyer app (two Firebase projects).", "Use \"Longest allowed\" to see the worst case with names cut to 30 and reasons / addresses to 60 characters (PRD 4.4)."], src: "US-BF-8.3-03 AC1, AC2 · PRD v1.4 NR-11, 4.4" },
   { label: "Android notification shade · all MVP push notifications", apply: () => reset({ view: "and", filter: (i, c) => MVP(i, c) && isPush(c), title: "Android · MVP push (collapsed)" }),
-    notes: ["Collapsed Android notifications show one line of title and one line of text; the rest appears when expanded.", "This is why the first words of the text must carry the meaning (PRD 4.4)."], src: "PRD v1.3 4.4" },
+    notes: ["Collapsed Android notifications show one line of title and one line of text; the rest appears when expanded.", "This is why the first words of the text must carry the meaning (PRD 4.4)."], src: "PRD v1.4 4.4" },
   { label: "Web pop-ups · all MVP web notifications", apply: () => reset({ view: "web", filter: (i, c) => MVP(i, c) && isWeb(c), title: "Web pop-up · MVP" }),
     notes: ["Pop-up on the buyer website, seller cabinet and admin panel: title on one line, text up to 3 lines, the first button from the catalogue.", "Shown for 5 seconds top right while the page is open (US-BF-8.3-03 AC3)."], src: "US-BF-8.3-03 AC3" },
   { label: "SMS · every SMS text with character set and length", apply: () => reset({ view: "sms", filter: (i, c) => i !== "YG-B1" && (/SMS/.test(c.oc || "") || /^SMS/.test(c.en)), title: "SMS" }),
-    notes: ["Latin texts (Uzbek, English) must use GSM-7 only, so one SMS holds 160 characters; Uzbek uses the plain apostrophe (o', g').", "Cyrillic SMS: ACC-01 ≤ 70, ACC-09 ≤ 134 characters (PRD 4.4).", "Items that are push with an extra SMS (DLV-04, ACC-07, ACC-08) are shown as one-line SMS of title + text; their SMS wording is to be confirmed."], src: "US-BF-8.3-03 AC7, AC8 · PRD v1.3 4.4" },
-  { label: "Length check · all 108 notifications in 3 languages", apply: () => reset({ view: "len", vals: "long", title: "Length check · title ≤ 40, text ≤ 130 after variables" }),
-    notes: ["Every push / list text in Russian, Uzbek and English, filled with the longest allowed values.", "Red rows break the limit. Tick \"Only texts over the limit\" for the list to fix.", "Switch to \"Typical\" values to see normal lengths."], src: "US-BF-8.3-02 AC9 · PRD v1.3 NR-11, 4.4" },
+    notes: ["Latin texts (Uzbek, English) must use GSM-7 only, so one SMS holds 160 characters; Uzbek uses the plain apostrophe (o', g').", "Cyrillic SMS: ACC-01 ≤ 70, ACC-09 ≤ 134 characters (PRD 4.4).", "Items that are push with an extra SMS (DLV-04, ACC-07, ACC-08) are shown as one-line SMS of title + text; their SMS wording is to be confirmed."], src: "US-BF-8.3-03 AC7, AC8 · PRD v1.4 4.4" },
+  { label: "Length check · all 104 notifications in 3 languages", apply: () => reset({ view: "len", vals: "long", title: "Length check · title ≤ 40, text ≤ 130 after variables" }),
+    notes: ["Every push / list text in Russian, Uzbek and English, filled with the longest allowed values.", "Red rows break the limit. Tick \"Only texts over the limit\" for the list to fix.", "Switch to \"Typical\" values to see normal lengths."], src: "US-BF-8.3-02 AC9 · PRD v1.4 NR-11, 4.4" },
   { label: "Buyer orders and delivery (ORD, DLV)", apply: () => reset({ view: "ios", filter: i => /^(ORD|DLV-0[1-2]|DLV-0[4-8])/.test(i), title: "Buyer · orders and delivery" }),
-    notes: ["ORD-01 – ORD-12 and DLV-01, DLV-02 are MVP; DLV-04 – DLV-08 ship with pickup; ORD-13, ORD-14 are release 2."], src: "US-BF-8.1-01, US-BF-8.1-02" },
+    notes: ["MVP: ORD-01, ORD-05 – ORD-09, DLV-01, DLV-02. With pickup: DLV-04 – DLV-08. Later: ORD-10 (refund, N10), ORD-11, ORD-12 (confirm receipt, N5), ORD-13, ORD-14.", "ORD-02, ORD-03, ORD-04 are removed: an order exists only after successful payment, so nothing is sent before it."], src: "US-BF-8.1-01, US-BF-8.1-02" },
   { label: "Seller orders (SOR, DLV-03, DLV-07)", apply: () => reset({ view: "ios", filter: i => /^(SOR|DLV-03|DLV-07)/.test(i), title: "Seller · orders" }),
-    notes: ["SOR-01 – SOR-07 and DLV-03 are MVP; SOR-08 – SOR-10 (stock) are release 2."], src: "US-SF-10.1-01" },
+    notes: ["MVP: SOR-01 – SOR-06 and DLV-03. Later: SOR-07 (N5) and SOR-08 – SOR-10 (stock, N13)."], src: "US-SF-10.1-01" },
   { label: "Account, chat and moderation (ACC, MSG, CAT)", apply: () => reset({ view: "ios", filter: i => /^(ACC|MSG|CAT)/.test(i), title: "Account, chat, moderation" }),
-    notes: ["ACC-01 and ACC-09 are SMS only and are not shown here (see the SMS scenario).", "MVP: ACC-02, ACC-04 – ACC-06, MSG-01, CAT-01, CAT-02; ACC-09, ACC-10 with seller roles."], src: "US-BF-8.3-05" },
-  { label: "Returns (RET)", apply: () => reset({ view: "ios", filter: i => /^RET/.test(i), title: "Returns" }),
-    notes: ["RET-01 – RET-06 and RET-12 ship with returns; RET-07 – RET-11 (disputes) are release 2."], src: "US-BF-8.2-01, US-SF-10.2-01" },
+    notes: ["ACC-01 and ACC-09 are SMS only and are not shown here (see the SMS scenario).", "MVP: ACC-02, ACC-04 – ACC-06 (ACC-05, ACC-06 also by e-mail, N7), MSG-01, CAT-01, CAT-02; ACC-09, ACC-10 with seller roles (not in the MVP)."], src: "US-BF-8.3-05" },
+  { label: "Returns (RET) · later", apply: () => reset({ view: "ios", filter: i => /^RET/.test(i), title: "Returns" }),
+    notes: ["All later: return and dispute notifications are out of the MVP (N1, N2). RET-05 is removed: no automatic approval (N1)."], src: "US-BF-8.2-01, US-SF-10.2-01" },
   { label: "Admin inbox (ADM) · web pop-ups", apply: () => reset({ view: "web", filter: i => /^ADM/.test(i), title: "Admin inbox" }),
-    notes: ["MVP: ADM-01, ADM-02, ADM-08; ADM-07 with Yandex Go; the rest release 2."], src: "US-AF-5.11-01" },
+    notes: ["MVP: ADM-01, ADM-02, to every admin (N15); ADM-07 with Yandex Go; ADM-08 later (N10); the rest later."], src: "US-AF-5.11-01" },
   { label: "Yandex Go (YG)", apply: () => reset({ view: "ios", filter: i => /^YG/.test(i), title: "Yandex Go" }),
-    notes: ["Ship with Yandex Go (US-YG-1.11). Texts here are the catalogue versions of PRD v1.3; US-YG-1.11 is to be pointed at these IDs (plan P3.6)."], src: "US-YG-1.11" },
-  { label: "Release 2 items (preview only)", apply: () => reset({ view: "ios", filter: (i, c) => c.r === "Later", title: "Release 2" }),
-    notes: ["Marketing, reviews, stock, finance, disputes and other release-2 items — shown for proofreading only."], src: "PRD v1.3 section 12" },
+    notes: ["Ship with Yandex Go (US-YG-1.11), except YG-B6 (refund), which is later (N10). Texts here are the catalogue versions of PRD v1.4; US-YG-1.11 is to be pointed at these IDs (plan P3.6)."], src: "US-YG-1.11" },
+  { label: "Later items (preview only)", apply: () => reset({ view: "ios", filter: (i, c) => c.r === "Later", title: "Later" }),
+    notes: ["Returns, refunds, confirm receipt, marketing, reviews, stock, finance and other later items — shown for proofreading only."], src: "PRD v1.4 section 12" },
 ];
-harness({ title: "P2.3 Push, pop-up and SMS gallery", stories: "Epic US-BF-8.0", version: "1.0" }, SC);
+harness({ title: "P2.3 Push, pop-up and SMS gallery", stories: "Epic US-BF-8.0", version: "1.1" }, SC);
